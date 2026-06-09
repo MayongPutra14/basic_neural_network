@@ -9,7 +9,19 @@ import cv2
 # ==========================================
 
 # Memuat model Neural Network yang sudah dilatih dari file pkl
-net = network.Network.load("trained_network.pkl")
+# MODEL EMNIST 36 CLASS
+net = network.Network.load("trained_network_emnist.pkl")
+
+# MAPPING LABEL EMNIST
+CLASS_NAMES = [
+    '0','1','2','3','4',
+    '5','6','7','8','9',
+    'A','B','C','D','E',
+    'F','G','H','I','J',
+    'K','L','M','N','O',
+    'P','Q','R','S','T',
+    'U','V','W','X','Y','Z'
+]
 
 # Mengatur konfigurasi dasar halaman web Streamlit
 st.set_page_config(page_title="Multi-Digit Classifier", layout="centered")
@@ -67,8 +79,6 @@ def process_single_digit(cropped_img):
 if st.button("Check digit"):
     # Memastikan data gambar dari kanvas tersedia
     if canvas_result.image_data is not None:
-
-      
         # Mengubah data kanvas menjadi array matriks bertipe 8-bit unsigned integer (0-255)
         rgba = canvas_result.image_data.astype(np.uint8)
 
@@ -115,8 +125,11 @@ if st.button("Check digit"):
                 outputs.append(output.flatten()) # Simpan array probabilitas untuk statistik chart
 
                 # Mengambil indeks dengan nilai probabilitas tertinggi sebagai hasil tebakan angka (0-9)
+                # PREDIKSI KELAS 0-35
                 pred = int(np.argmax(output))
-                predictions.append(str(pred))
+
+                # KONVERSI KE KARAKTER
+                predictions.append(CLASS_NAMES[pred])
 
             # Jika semua kontur ternyata hanya noise/titik kecil dan tidak menghasilkan prediksi valid
             if len(predictions) == 0:
